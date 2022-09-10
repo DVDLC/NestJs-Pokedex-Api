@@ -5,6 +5,7 @@ import { isValidObjectId, Model } from 'mongoose';
 // DTOS
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
+import { paginationDTO } from '../common/dto/querys-pagination.dto';
 // Entity
 import { Pokemon } from './entities/pokemon.entity';
 
@@ -29,8 +30,17 @@ export class PokemonService {
     }
   }
 
-  findAll() {
-    return `This action returns all pokemon`;
+  findAll( paginationDTO: paginationDTO ) {  
+    
+    const { limit = 20, offset = 0 } = paginationDTO
+    
+    return this.pokemonModel.find()
+      .limit( limit )
+      .skip( offset )
+      .sort({
+        no: 1
+      })
+      .select('-__v');
   }
 
   async findOne( term: string ) {
@@ -58,8 +68,6 @@ export class PokemonService {
 
     const pokemon = await this.findOne( term )
  
-    
-
     try {
       if( updatePokemonDto.name ) updatePokemonDto.name = updatePokemonDto.name.toLowerCase()
 
@@ -78,7 +86,6 @@ export class PokemonService {
 
     return pokemon ;
   }
-
 
   private handleExeptions( err: any ){
     if( err.code === 11000 ) throw new BadRequestException( `Pokemon already exist in DB ${ JSON.stringify( err.keyValue ) }` )

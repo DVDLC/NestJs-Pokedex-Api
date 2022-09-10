@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Injectable, Module } from '@nestjs/common';
 import { AxiosAdapter } from './providers/axios.adapter';
 
 @Module({
